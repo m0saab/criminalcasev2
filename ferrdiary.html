@@ -1,0 +1,155 @@
+html_content = """<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Feriel's Secret Diary</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        @page {
+            size: A4;
+            margin: 15mm 12mm;
+            background-color: #fff0f5; /* LavenderBlush background */
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff0f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #4a3b40;
+        }
+        .notebook {
+            background-color: #ffffff;
+            border-left: 20px solid #ffb6c1; /* Pink spine look */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            min-height: 260mm;
+            padding: 25px 40px;
+            position: relative;
+            background-image: linear-gradient(#e8f4fd 1px, transparent 1px);
+            background-size: 100% 24px;
+        }
+        .header-title {
+            text-align: center;
+            font-family: 'Georgia', serif;
+            color: #ff69b4;
+            font-size: 24pt;
+            margin-bottom: 30px;
+            border-bottom: 2px dashed #ffb6c1;
+            padding-bottom: 10px;
+        }
+        .entry {
+            margin-bottom: 28px;
+            page-break-inside: avoid;
+            line-height: 24px;
+        }
+        .date {
+            font-weight: bold;
+            color: #db7093;
+            font-size: 12pt;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #ffc0cb;
+            display: inline-block;
+            padding-bottom: 2px;
+        }
+        .content {
+            font-size: 11pt;
+            text-align: justify;
+        }
+        .eng {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #d11141;
+            direction: ltr;
+            display: inline-block;
+        }
+        .emoji {
+            font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div class="notebook">
+    <div class="header-title">🎀 Feriel's Journal 🎀</div>
+
+    <div class="entry">
+        <div class="date">3 نوفمبر 2025</div>
+        <div class="content">
+            ملا نهار! قاعدة نحس في روحي عاجبتني الـ <span class="eng">new experience</span> في الـ <span class="eng">uni</span>. الـ <span class="eng">new friends</span> محلاهم علخر، أما فما الطفلة هذيكة سندة قداش <span class="eng">annoying</span>، هبلتني! ظاهرلي في النهاية تطلع تـغار مني، <span class="eng">jealous</span> يعني.
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">12 نوفمبر 2025</div>
+        <div class="content">
+            اليوم صارت عفسة غريبة علخر. شفت حسن في الـ <span class="eng">university</span>. ياخي مش على أساس ماشي لـ <span class="eng">Carthage University</span>؟ الحكاية <span class="eng">weird</span> و تعيّف... بصراحة قاعدة تعطي في <span class="eng">stalker</span> vibes.
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">20 نوفمبر 2025</div>
+        <div class="content">
+            موش عادية المفاجأة! حسن جابلي <span class="eng">earrings</span> كـ <span class="eng">gift</span>.. محلاهم علخر الصراحة وهبلوني، أما ديما نتمنى لو كان ينساني و <span class="eng">get over me</span>.. المسكين يستاهل ما خير، <span class="eng">he deserve someone better</span> وما نحبش نربطه معايا عل فارغ.
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">27 نوفمبر 2025</div>
+        <div class="content">
+            ياااا روحي!! <span class="eng">new iphone</span>! يعطيك الصحة بابا على الـ <span class="eng">gift</span> المزيان هذا <span class="emoji">🥳📱</span> أخيراً نجم نبدا الـ <span class="eng">posting</span> و نصوّر <span class="eng">vlogs</span> على <span class="eng">youtube</span>.
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">5 ديسمبر 2025</div>
+        <div class="content">
+            جبت 17/20 في الـ <span class="eng">accounting</span>! لتس غووووو <span class="eng">lets goooooo</span>! فريال الـ <span class="eng">future accounting expert</span> في الثنية هههه، بالرسمي فرحانة برشة اليوم.
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">10 ديسمبر 2025</div>
+        <div class="content">
+            مصدومة... أصحابي <span class="eng">bullied me</span> اليوم. ندمت إلي مشيت معاهم. وقيلا من أول نهار ما كانوش <span class="eng">my friends</span> بالرسمي. خسارة فيهم التعب.
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">18 ديسمبر 2025</div>
+        <div class="content">
+            باهي، خلينا نبدلو الجو لحاجة خير... الـ <span class="eng">new teacher</span> الجديد قداش <span class="eng">cuuuute</span>!! <span class="emoji">😍</span> أما الـ <span class="eng">driver</span> متاعنا قداش <span class="eng">boring</span> و يفدّد، تمنيت كان بابا جاب حد عنده <span class="eng">sense of humour</span> و يفركها شوية.
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">24 ديسمبر 2025</div>
+        <div class="content">
+            اليوم طردوا الـ <span class="eng">gardener</span>.. مسكين و الله كان <span class="eng">nice guy</span> وعاقل، أما أمي ساعات تبدا قاسية في قراراتها وما ترحمش.. غاضني علخر.
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">29 ديسمبر 2025</div>
+        <div class="content">
+            لولاااد، مش عادية العفسة! الـ <span class="eng">teacher</span> بيده <span class="eng">added me on facebook</span> هههه <span class="eng">lol</span>! قاعدة نثبت في الـ écran و مش مصدقة. لازمني <span class="eng">taw taw</span> نبدا الـ <span class="eng">start messaging him</span>!
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="date">7 جانفي 2026</div>
+        <div class="content">
+            بدينا عام جديد ودوامة جديدة. الـ <span class="eng">uni</span> طلعت رولركوستر بالرسمي، أما هاني قاعدة نتعلم شكون يستاهل يقعد في حياتي وشكون للـ <span class="eng">poubelle</span>. توا الـ focus الكل على الـ <span class="eng">vlogs</span> متاعي... و خلينا نشوفو الـ <span class="eng">facebook message</span> وين باش يوصلنا <span class="emoji">😉</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+"""
+
+with open("feriel_diary.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+from weasyprint import HTML
+HTML("feriel_diary.html").write_pdf("feriel_diary.pdf")

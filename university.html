@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معهد آيسبريت العالي للإدارة والأعمال | ISPRIT School of Business</title>
+    <style>
+        :root {
+            --primary: #a82323;
+            --secondary: #0f172a;
+            --accent: #ca8a04;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --border: #cbd5e1;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        header {
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .top-bar {
+            background-color: var(--secondary);
+            color: white;
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .info-btn {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+        .info-btn:hover {
+            color: white;
+        }
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+        .logo span {
+            color: var(--secondary);
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+        .nav-links li {
+            position: relative;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Student Login Button Changed to "Log In" */
+        .student-login-btn {
+            background-color: var(--primary);
+            color: white !important;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .student-login-btn:hover {
+            background-color: #851c1c;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(168, 35, 35, 0.9));
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.4rem;
+            margin-bottom: 15px;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .stat-card {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--primary);
+        }
+        .stat-card h3 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        .stat-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* News Section */
+        .news-section {
+            margin-bottom: 60px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            display: inline-block;
+        }
+        .news-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .news-day-group {
+            background: white;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .date-badge {
+            background-color: var(--secondary);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .news-card {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 4px;
+            border-right: 4px solid var(--primary);
+        }
+        .news-card.urgent {
+            border-right-color: var(--accent);
+            background-color: #fffbeb;
+        }
+        .news-card h4 {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .news-card p {
+            font-size: 0.9rem;
+            color: var(--dark);
+            text-align: justify;
+        }
+        .news-meta {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 10px;
+            display: block;
+            font-weight: 500;
+        }
+
+        /* Login Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background: white;
+            padding: 35px;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--primary);
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        .modal-box h3 {
+            margin-bottom: 20px;
+            color: var(--secondary);
+            font-size: 1.3rem;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            outline: none;
+            direction: ltr; /* inputs in LTR for clean typing of emails/numbers */
+            text-align: left;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+        .error-message {
+            color: var(--primary);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            display: none;
+            font-weight: bold;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #1e293b;
+        }
+
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            padding: 50px 20px 25px;
+            margin-top: 60px;
+        }
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 30px;
+        }
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        .footer-col ul {
+            list-style: none;
+        }
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+        .footer-col ul a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .footer-col ul a:hover {
+            color: white;
+        }
+        .footer-col p {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <span>بوابة الإعلانات والأنشطة اليومية المعتمدة للطلبة</span>
+                <button class="info-btn" onclick="showInfoAlert()" title="دليل الحساب الجامعي">ℹ️ المساعدة الرقمية</button>
+            </div>
+            <div><a href="#">Français</a></div>
+        </div>
+        <nav>
+            <a href="#" class="logo">ISPRIT <span>School of Business</span></a>
+            <div class="nav-container">
+                <ul class="nav-links">
+                    <li><a href="#">من نحن</a></li>
+                    <li><a href="#">البرامج الأكاديمية</a></li>
+                    <li><a href="#">بوابة الطالب</a></li>
+                    <li><a href="#">جداول الأوقات</a></li>
+                    <li><a href="#">مركز الفضاء المؤسساتي</a></li>
+                </ul>
+                <a href="#" class="student-login-btn" onclick="toggleModal(true)">Log In</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-box">
+            <span class="close-modal" onclick="toggleModal(false)">&times;</span>
+            <h3>تسجيل دخول الطلبة</h3>
+            <p id="errorMsg" class="error-message">اسم المستخدم أو كلمة المرور غير صحيحة!</p>
+            <form onsubmit="validateLogin(event)">
+                <div class="form-group">
+                    <label for="userCode" style="text-align: right;">اسم المستخدم (User Code)</label>
+                    <input type="text" id="userCode" placeholder="name@university.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password" style="text-align: right;">كلمة المرور (Password)</label>
+                    <input type="password" id="password" placeholder="رقم بطاقة التعريف الوطنية CIN" required>
+                </div>
+                <button type="submit" class="submit-btn">تسجيل الدخول</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="hero">
+        <h1>فضاء المستجدات والأخبار اليومية | معهد ISPRIT</h1>
+        <p>متابعة مستمرة لكافة التغييرات التنظيمية، الجداول الدراسية، والفعاليات العلمية والمهنية المباشرة داخل الحرم الجامعي.</p>
+    </section>
+
+    <div class="container">
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>1,825</h3>
+                <p>إجمالي الكفاءات والخريجين المنتسبين للمعهد</p>
+            </div>
+            <div class="stat-card">
+                <h3>17</h3>
+                <p>جنسية مختلفة يضمها الحرم الجامعي المشترك</p>
+            </div>
+            <div class="stat-card">
+                <h3>86%</h3>
+                <p>معدل الاندماج المهني السريع للخريجين في قطاع الأعمال</p>
+            </div>
+            <div class="stat-card">
+                <h3>12</h3>
+                <p>شراكة أكاديمية مفعلة مع مؤسسات دولية</p>
+            </div>
+        </div>
+
+        <div class="news-section">
+            <h2 class="section-title">الأخبار والمستجدات الجامعية اليومية</h2>
+            
+            <div class="news-timeline">
+                
+                <div class="news-day-group">
+                    <span class="date-badge">10 جانفي</span>
+                    <div class="news-grid">
+                        <div class="news-card urgent">
+                            <h4>تحيين عاجل: تعديل في جدول أوقات امتحانات السداسي الأول</h4>
+                            <p>تعلن الإدارة الأكاديمية لمعهد ISPRIT عن إجراء تعديل جزئي في جدول أوقات امتحانات السداسي الأول لطلبة السنة الثالثة إجازة في علوم التسيير. يرجى من كافة الطلبة سحب جداولهم المحدثة مباشرة عبر المنصة الرقمية الداخلية للمعهد للتأكد من التوقيت الجديد للقاعات.</p>
+                            <span class="news-meta">المصدر: الإدارة العامة للدراسات | التوقيت: 08:30 صباحاً</span>
+                        </div>
+                        <div class="news-card">
+                            <h4>زيارة ميدانية موجهة لفائدة طلبة ماجستير تحليل البيانات</h4>
+                            <p>في إطار دعم الجانب التطبيقي، ينظم المعهد بالتنسيق مع القطب التكنولوجي زيارة ميدانية استطلاعية لمقر إحدى الشركات الكبرى المتخصصة في الأنظمة الرقمية، وذلك للاطلاع على آليات إدارة مراكز البيانات الضخمة (Data Centers) وسير العمل الواقعي.</p>
+                            <span class="news-meta">المصدر: قسم العلاقات الخارجية | التوقيت: 11:15 صباحاً</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-day-group">
+                    <span class="date-badge">09 جانفي</span>
+                    <div class="news-grid">
+                        <div class="news-card">
+                            <h4>ندوة علمية حول آفاق التحول الرقمي في القطاع المالي</h4>
+                            <p>احتضن المدرج الرئيسي بمعهد ISPRIT ندوة تفاعلية بحضور خبراء ومستشارين في الهندسة المالية والمحاسبة الرقمية. ناقشت الندوة آليات دمج تقنيات الذكاء الاصطناعي في التدقيق المالي وإدارة المخاطر بمشاركة واسعة من أساتذة المعهد وطلبة الماجستير.</p>
+                            <span class="news-meta">المصدر: إدارة البحث والتطوير الأكاديمي | التوقيت: 10:00 صباحاً</span>
+                        </div>
+                        <div class="news-card urgent">
+                            <h4>تنبيه إداري: تذكير بآخر أجل لتسليم تقارير التربصات الميدانية</h4>
+                            <p>تذكر إدارة التربصات كافة طلبة السنة الثانية ماجستير مهني أن التاريخ النهائي المعتمد لإيداع النسخ الورقية والإلكترونية من تقارير التربص الصيفي سيكون في غضون الأسبوع القادم.</p>
+                            <span class="news-meta">المصدر: مكتب شؤون التربصات والشركات | التوقيت: 01:00 مساءً</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-day-group">
+                    <span class="date-badge">08 جانفي</span>
+                    <div class="news-grid">
+                        <div class="news-card">
+                            <h4>ورشة عمل تطبيقية حول إستراتيجيات التسويق المتكامل</h4>
+                            <p>نظم قسم التسويق بالمعهد ورشة عمل تدريبية مغلقة لفائدة طلبة السنوات النهائية، تم التركيز خلالها على آليات صياغة الحملات الإعلانية الموجهة وبناء خطط الانتشار الرقمي السريع.</p>
+                            <span class="news-meta">المصدر: قسم التسويق وإدارة الأعمال | التوقيت: 09:15 صباحاً</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>معهد ISPRIT العالي</h4>
+                <p>مؤسسة جامعية خاصة معتمدة للتعليم العالي في مجالات تكنولوجيا المعلومات وإدارة الأعمال، تعمل على ربط المسارات الأكاديمية بالمهن الواعدة.</p>
+            </div>
+            <div class="footer-col">
+                <h4>روابط سريعة إدارية</h4>
+                <ul>
+                    <li><a href="#" onclick="toggleModal(true)">المنصة الرقمية للطلبة</a></li>
+                    <li><a href="#">روزنامة السنة الجامعية الحالية</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>معلومات المقر والاتصال</h4>
+                <p>
+                    مجمع آيسبريت الأكاديمي: Lot N° 46, Z.I Chotrana II, 2088, Ariana, Tunisia<br>
+                    البريد الإلكتروني للإدارة: contact@isprit-school.tn<br>
+                    الهاتف الإداري المركزي: 900 168 70 (216)+
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 معهد ISPRIT لعلوم الإدارة والأعمال. جميع الحقوق محفوظة ومحمية قانونياً لحساب المعهد.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Modal toggling functions
+        function toggleModal(show) {
+            const modal = document.getElementById('loginModal');
+            modal.style.display = show ? 'flex' : 'none';
+            if(!show) {
+                document.getElementById('errorMsg').style.display = 'none';
+            }
+        }
+
+        // Info button script
+        function showInfoAlert() {
+            alert("للوصول إلى حسابك الجامعي، يرجى كتابة البريد الإلكتروني في حقل اسم المستخدم بالصيغة التالية: name@university.com، وفي حقل كلمة المرور يرجى إدخال رقم بطاقة التعريف الوطنية الخاص بك (CIN).");
+        }
+
+        // Strict validation and direction adjustment
+        function validateLogin(event) {
+            event.preventDefault();
+            const userField = document.getElementById('userCode').value.trim();
+            const passField = document.getElementById('password').value.trim();
+            const errorElement = document.getElementById('errorMsg');
+
+            // Hardcoded credential requirement check
+            if (userField === 'feriel@university.com' && passField === '898010010') {
+                errorElement.style.display = 'none';
+                // Success Anchor Redirection Trigger
+                window.location.href = 'log.html';
+            } else {
+                errorElement.style.display = 'block';
+            }
+        }
+
+        // Window behavior fallback
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+                document.getElementById('errorMsg').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

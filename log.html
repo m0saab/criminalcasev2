@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الطالب المعتمدة | الفضاء الداخلي ISPRIT</title>
+    <style>
+        :root {
+            --primary: #a82323;
+            --secondary: #0f172a;
+            --success: #15803d;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --border: #cbd5e1;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .logout-btn {
+            background-color: transparent;
+            border: 1px solid #cbd5e1;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .welcome-card h2 {
+            color: var(--secondary);
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+        }
+        .welcome-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Dashboard Actions Tabs */
+        .dashboard-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .tab-btn {
+            background: white;
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--secondary);
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--secondary);
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            border-top-color: var(--primary);
+        }
+
+        /* Sections Content Management */
+        .content-section {
+            display: none;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .content-section.active {
+            display: block;
+        }
+        .section-header {
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        /* Payment Specific Styling */
+        .payment-status-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-right: 5px solid var(--success);
+            padding: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .success-icon {
+            color: var(--success);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Tables Common Styling */
+        .dashboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .dashboard-table th, .dashboard-table td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: center;
+        }
+        .dashboard-table th {
+            background-color: var(--secondary);
+            color: white;
+            font-weight: 600;
+        }
+        .dashboard-table tr:nth-child(even) td {
+            background-color: var(--light);
+        }
+        
+        /* Clickable Teacher Styling */
+        .prof-link {
+            color: var(--primary);
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .prof-link:hover {
+            color: var(--secondary);
+        }
+
+        .excellent-grade {
+            color: var(--success);
+            font-weight: bold;
+        }
+        .average-grade {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* Prof Announcement Modal Custom Styles */
+        .prof-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        .prof-modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-top: 5px solid var(--primary);
+            position: relative;
+        }
+        .prof-modal-close {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        .prof-title {
+            color: var(--secondary);
+            font-size: 1.25rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .prof-subtitle {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        .announcement-body {
+            background-color: var(--light);
+            border: 1px dashed var(--border);
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            text-align: justify;
+        }
+        .announcement-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="user-badge">
+            <div class="user-avatar">FN</div>
+            <div>
+                <strong style="display: block; font-size: 0.95rem;">فريال النجار (Feriel Najjar)</strong>
+                <span style="font-size: 0.75rem; color: #cbd5e1;">المعرف الدراسي: ISPRIT-2025-8980</span>
+            </div>
+        </div>
+        <a href="index.html" class="logout-btn">تسجيل الخروج</a>
+    </header>
+
+    <div class="container">
+        
+        <div class="welcome-card">
+            <h2>مرحباً بكِ مجدداً، فريال</h2>
+            <p>مرحباً بكِ في فضاء الخدمات الأكاديمية الخاص بكِ لمتابعة الوضعية الإدارية والجدول الروزماتي التدريسي للسداسي الأول.</p>
+        </div>
+
+        <div class="dashboard-tabs">
+            <div class="tab-btn" onclick="openSection('paymentsSection')">
+                <i>💳</i> المدفوعات والوضعية المالية (Payments)
+            </div>
+            <div class="tab-btn" onclick="openSection('timetableSection')">
+                <i>📅</i> جدول الأوقات الأسبوعي (Timetable)
+            </div>
+            <div class="tab-btn" onclick="openSection('gradesSection')">
+                <i>📊</i> كشف الأعداد والنتائج (Grades)
+            </div>
+        </div>
+
+        <!-- Section 1: Payments -->
+        <div id="paymentsSection" class="content-section">
+            <div class="section-header">الوضعية المالية للمستحقات الدراسية</div>
+            <div class="payment-status-box">
+                <span class="success-icon">✓</span>
+                <div>
+                    <h4 style="color: var(--success); margin-bottom: 3px;">تمت عملية الدفع بنجاح (Payment Successful)</h4>
+                    <p style="color: #166534; font-size: 0.9rem;">تمت تسوية كافة الرسوم الدراسية والتسجيل بنجاح منذ تاريخ <strong>20 سبتمبر 2025</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Timetable -->
+        <div id="timetableSection" class="content-section">
+            <div class="section-header">جدول الحصص والمحاضرات الأسبوعي المعتمد</div>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 15px;">* يرجى الانتباه لأماكن القاعات وتحديثات المجموعات التدريسية المباشرة.</p>
+            
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>اليوم</th>
+                        <th>08:30 - 10:00</th>
+                        <th>10:00 - 12:00</th>
+                        <th>13:00 - 14:30</th>
+                        <th>14:30 - 16:00</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>الإثنين</strong></td>
+                        <td>Principes de Gestion 1</td>
+                        <td>Microéconomie</td>
+                        <td>--</td>
+                        <td>Mathématique 1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الثلاثاء</strong></td>
+                        <td>Comptabilité Financière 1</td>
+                        <td>Mathématiques Financières</td>
+                        <td>Introduction au Droit</td>
+                        <td>--</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الأربعاء</strong></td>
+                        <td>--</td>
+                        <td>Principes de Gestion 1</td>
+                        <td>C2i Niveau 1 (Informatique)</td>
+                        <td>Microéconomie</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الخميس</strong></td>
+                        <td>Mathématique 1</td>
+                        <td>Comptabilité Financière 1</td>
+                        <td>Introduction au Droit</td>
+                        <td>Mathématiques Financières</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الجمعة</strong></td>
+                        <td>C2i Niveau 1 (Informatique)</td>
+                        <td>English (Business English / Certifications 1)</td>
+                        <td>--</td>
+                        <td>مراجعة عامة وتوجيه</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 3: Grades (Active Default Layout) -->
+        <div id="gradesSection" class="content-section active">
+            <div class="section-header">كشف أعداد السداسي الأول الأساسي</div>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 15px;">* اضغط على اسم الأستاذ للاطلاع على ملفه والتحيينات الإدارية الصادرة عنه.</p>
+            
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>المادة الدراسية (Course Title)</th>
+                        <th>الأستاذ (Professor)</th>
+                        <th>العدد (Grade)</th>
+                        <th>النتيجة (Result)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: right;">Comptabilité Financière 1</td>
+                        <td><span class="prof-link" onclick="openProfModal('monia')">أ. منية بن رمضان</span></td>
+                        <td class="excellent-grade">17.00 / 20</td>
+                        <td>متميز</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">English (Préparation aux certifications 1 / Business English)</td>
+                        <td><span class="prof-link" onclick="openProfModal('mourad')">أ. مراد الطرابلسي</span></td>
+                        <td class="excellent-grade">20.00 / 20</td>
+                        <td>متميز جداً</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Microéconomie</td>
+                        <td><span class="prof-link" onclick="openProfModal('salim')">أ. سليم بالقمحة</span></td>
+                        <td class="average-grade">10.50 / 20</td>
+                        <td>مقبول</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Mathématique 1</td>
+                        <td><span class="prof-link" onclick="openProfModal('hala')">أ. هالة الماجري</span></td>
+                        <td class="average-grade">09.00 / 20</td>
+                        <td>مؤجل</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Introduction au Droit</td>
+                        <td><span class="prof-link" onclick="openProfModal('kais')">أ. قيس السعيدي</span></td>
+                        <td class="average-grade">11.00 / 20</td>
+                        <td>مقبول</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Mathématiques Financières</td>
+                        <td><span class="prof-link" onclick="openProfModal('rim')">أ. ريم الغربي</span></td>
+                        <td class="average-grade">08.50 / 20</td>
+                        <td>مؤجل</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">C2i Niveau 1 (Informatique)</td>
+                        <td><span class="prof-link" onclick="openProfModal('anis')">أ. أنيس بن عمار</span></td>
+                        <td class="average-grade">12.00 / 20</td>
+                        <td>مقبول</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Professor Profile & Updates Modal -->
+    <div class="prof-modal-overlay" id="profModal">
+        <div class="prof-modal-box">
+            <span class="prof-modal-close" onclick="closeProfModal()">&times;</span>
+            <div class="prof-title" id="modalProfName">اسم الأستاذ</div>
+            <div class="prof-subtitle" id="modalProfMeta">أستاذ المادة في جامعة ISPRIT</div>
+            <div style="font-weight: bold; margin-bottom: 8px; color: var(--secondary);">آخر التحديثات والإعلانات:</div>
+            <div class="announcement-body" id="modalProfAnnouncement">
+                لا توجد إعلانات جديدة حالياً.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Section Navigation
+        function openSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Professors Database Objects
+        const profsData = {
+            monia: {
+                name: "أ. منية بن رمضان",
+                meta: "Professor of Comptabilité Financière 1 at ISPRIT University",
+                date: "Posted on 14 January 2026",
+                dir: "rtl",
+                text: "الرجاء من كافة الطلبة إحضار المطبوعات التوجيهية الخاصة بمحاضرة التدقيق المالي القادمة، حيث سيتم إجراء اختبار تقييمي قصير مستمر يقع احتسابه ضمن أعداد الأشغال التطبيقية."
+            },
+            mourad: {
+                name: "أ. مراد الطرابلسي",
+                meta: "Professor of English at ISPRIT University",
+                date: "Posted on 2 January 2026",
+                dir: "ltr", // Strict LTR format for English
+                text: "Dear Students,<br>I hope you are all doing well.<br><br>I would like to inform you that I will unfortunately be absent for the next two weeks due to an unexpected family emergency that requires my full attention. I sincerely apologize for any inconvenience this may cause and appreciate your understanding during this difficult time.<br><br>Please continue to keep up with your coursework and any assigned materials. I will do my best to respond to urgent messages when possible and will resume classes as soon as I am able.<br><br>Thank you for your patience, understanding, and support. I look forward to seeing you all again soon.<br><br>Best regards,"
+            },
+            salim: {
+                name: "أ. سليم بالقمحة",
+                meta: "Professor of Microéconomie at ISPRIT University",
+                date: "Posted on 12 January 2026",
+                dir: "rtl",
+                text: "تم رفع السلسلة الثالثة من التمارين التطبيقية المتعلقة بتحليل سلوك المستهلك وتوازن السوق عبر المنصة الرقمية الموحدة. يرجى مراجعتها قبل حصة الحوار القادمة."
+            },
+            hala: {
+                name: "أ. هالة الماجري",
+                meta: "Professor of Mathématique 1 at ISPRIT University",
+                date: "Posted on 10 January 2026",
+                dir: "rtl",
+                text: "تذكير: حصة الدعم والمراجعة المخصصة للجبر الخطي والتحليل الرياضي ستنعقد بصفة استثنائية يوم السبت صباحاً بالقاعة رقم 102."
+            },
+            kais: {
+                name: "أ. قيس السعيدي",
+                meta: "Professor of Introduction au Droit at ISPRIT University",
+                date: "Posted on 08 January 2026",
+                dir: "rtl",
+                text: "تحديث: تم تحديد محاور الاختبار النهائي المعتمد؛ والتركيز سيكون أساساً على النظرية العامة للالتزامات والنصوص القانونية المؤطرة للمعاملات التجارية."
+            },
+            rim: {
+                name: "أ. ريم الغربي",
+                meta: "Professor of Mathématiques Financières at ISPRIT University",
+                date: "Posted on 11 January 2026",
+                dir: "rtl",
+                text: "تم فتح نافذة تسليم أعمال التدقيق وحساب الفوائد المركبة عبر الفضاء الافتراضي. آخر أجل لقبول التقارير هو مساء يوم الأحد."
+            },
+            anis: {
+                name: "أ. أنيس بن عمار",
+                meta: "Professor of C2i Niveau 1 (Informatique) at ISPRIT University",
+                date: "Posted on 05 January 2026",
+                dir: "rtl",
+                text: "الرجاء التثبت من تفعيل حساباتكم المؤسساتية للتمكن من ولوج منصة الاختبارات التطبيقية لشهادة الإعلامية الدولية المقررة نهاية الشهر."
+            }
+        };
+
+        // Modal Functionality Trigger
+        function openProfModal(profKey) {
+            const data = profsData[profKey];
+            if(data) {
+                document.getElementById('modalProfName').innerText = data.name;
+                document.getElementById('modalProfMeta').innerText = data.meta;
+                
+                // Set text container and layout direction properties dynamically
+                const announcementBox = document.getElementById('modalProfAnnouncement');
+                announcementBox.innerHTML = data.text + `<span class="announcement-date">${data.date}</span>`;
+                announcementBox.style.direction = data.dir;
+                announcementBox.style.textAlign = data.dir === 'ltr' ? 'left' : 'justify';
+
+                document.getElementById('profModal').style.display = 'flex';
+            }
+        }
+
+        function closeProfModal() {
+            document.getElementById('profModal').style.display = 'none';
+        }
+
+        // Handle outside element layout clicks
+        window.onclick = function(event) {
+            const modal = document.getElementById('profModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

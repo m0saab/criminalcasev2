@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكاة مسار الرحلة والمواقع الجغرافية</title>
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: #161b26;
+            --accent-red: #ff4d4d;
+            --accent-blue: #00d2ff;
+            --text-color: #f0f4f8;
+            --text-muted: #8a99ad;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+
+        /* مسار الطائرة والانيميشن */
+        .flight-tracker-container {
+            background: var(--card-bg);
+            border: 1px solid #252d3d;
+            border-radius: 12px;
+            padding: 80px 40px;
+            position: relative;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .flight-path {
+            height: 4px;
+            background: linear-gradient(to left, #252d3d, var(--accent-blue), #252d3d);
+            width: 100%;
+            position: relative;
+            border-radius: 2px;
+        }
+
+        .airplane {
+            position: absolute;
+            top: -18px;
+            right: 0%; /* تبدا من اليمين للياسر بما أن الاتجاه عربي */
+            font-size: 24px;
+            transform: rotate(180deg);
+            transition: right 15s linear;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        /* نقاط الأحداث على الخط */
+        .checkpoint {
+            position: absolute;
+            top: -6px;
+            width: 16px;
+            height: 16px;
+            background-color: #252d3d;
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+            transform: translateX(50%);
+            transition: all 0.3s ease;
+        }
+
+        .checkpoint.active {
+            background-color: var(--accent-red);
+            border-color: var(--accent-red);
+            box-shadow: 0 0 12px var(--accent-red);
+        }
+
+        .checkpoint-info {
+            position: absolute;
+            top: -45px;
+            transform: translateX(50%);
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .checkpoint-location {
+            position: absolute;
+            top: 25px;
+            transform: translateX(50%);
+            font-size: 0.8rem;
+            color: var(--accent-blue);
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .checkpoint.active .checkpoint-info {
+            color: var(--accent-red);
+        }
+
+        /* كروت تفاصيل الأحداث */
+        .events-display {
+            background: var(--card-bg);
+            border: 1px solid #252d3d;
+            border-radius: 12px;
+            padding: 25px;
+            min-height: 180px;
+            position: relative;
+        }
+
+        .event-card {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .event-card.visible {
+            display: block;
+        }
+
+        .event-card h3 {
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .event-card h3 span.badge {
+            background: rgba(0, 210, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .event-card h3 span.loc-badge {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .event-card.critical h3 {
+            color: var(--accent-red);
+        }
+        .event-card.critical h3 span.badge {
+            background: rgba(255, 77, 77, 0.1);
+        }
+
+        .event-card p {
+            color: var(--text-color);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-play {
+            background: var(--accent-blue);
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-play:hover {
+            background: #00b4db;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>محاكاة مسار الجريمة والمواقع الجغرافية للرحلة</h1>
+        <p>تتبع حركة الطائرة والمجال الجوي لكل حدث بدقة</p>
+    </header>
+
+    <div class="controls">
+        <button class="btn-play" onclick="startFlight()">▶ ابدأ المحاكاة وتتبع الإحداثيات</button>
+    </div>
+
+    <!-- لوحة خط الطيران والطيارة اللي تتحرك -->
+    <div class="flight-tracker-container">
+        <div class="flight-path">
+            <div class="airplane" id="airplane">✈️</div>
+            
+            <!-- نقاط زمنية ومواقع موزعة نسبياً -->
+            <div class="checkpoint" style="right: 0%;" id="cp1">
+                <span class="checkpoint-info">13:45</span>
+                <span class="checkpoint-location">مطار الإقلاع</span>
+            </div>
+            <div class="checkpoint" style="right: 30%;" id="cp2">
+                <span class="checkpoint-info">14:20</span>
+                <span class="checkpoint-location">فوق البحر الأبيض المتوسط</span>
+            </div>
+            <div class="checkpoint" style="right: 60%;" id="cp3">
+                <span class="checkpoint-info">14:45</span>
+                <span class="checkpoint-location">جنوب الأجواء الإيطالية</span>
+            </div>
+            <div class="checkpoint" style="right: 75%;" id="cp4">
+                <span class="checkpoint-info">14:55</span>
+                <span class="checkpoint-location">أجواء جزيرة سردينيا/صقلية</span>
+            </div>
+            <div class="checkpoint" style="right: 100%;" id="cp5">
+                <span class="checkpoint-info">15:30</span>
+                <span class="checkpoint-location">مطار الهبوط الاضطراري</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- شاشة عرض تفاصيل الأحداث والمواقع -->
+    <div class="events-display">
+        <!-- حدث 1 -->
+        <div class="event-card visible" id="event-cp1">
+            <h3><span class="badge">13:45</span> إقلاع الرحلة <span class="badge loc-badge">📍 مدرج مطار تونس قرطاج الدولي</span></h3>
+            <p>الرحلة بدأت عادي جداً. نبيل قعد في الفيرست كلاس، طلب قهوة وحط سماعاته وبدا يخمم في الصفقة متاعه بدون أي مشاكل تذكر والطائرة تأخذ مسارها الروتيني للارتفاع.</p>
+        </div>
+        <!-- حدث 2 -->
+        <div class="event-card" id="event-cp2">
+            <h3><span class="badge">14:20</span> سلوك متوتر ومكالمات <span class="badge loc-badge">📍 على ارتفاع 30,000 قدم فوق البحر الأبيض المتوسط</span></h3>
+            <p>الركاب اللي قاعدين بحذا نبيل قالوا إنه بدا يظهر عليه التوتر. كان يتكلم في التليفون بصوت منخفض (باستعمال شبكة الطائرة اللاسلكية) ويبدل في الأوراق اللي قدامه باستمرار وبشكل مريب.</p>
+        </div>
+        <!-- حدث 3 -->
+        <div class="event-card critical" id="event-cp3">
+            <h3><span class="badge">14:45</span> مغادرة المقعد <span class="badge loc-badge">📍 دخول الأجواء الإيطالية (قرب السواحل الجنوبية)</span></h3>
+            <p>قام نبيل من مقعده ومشى للتواليت — حاجة عادية يعملها أي راكب في الطيارة وما حد ما حس بشيء غريب وقتها. الطائرة كانت تسير بسرعة كاملة في مسارها.</p>
+        </div>
+        <!-- حدث 4 -->
+        <div class="event-card critical" id="event-cp4">
+            <h3><span class="badge">14:55</span> اكتشاف مسرح الجريمة <span class="badge loc-badge">📍 فوق المجال الجوي لجزيرة سردينيا</span></h3>
+            <p>بعد 10 دقائق التواليت مزالت مسكرة. المضيفة حست بريحة غريبة، حلت الباب بالقوة مع زميلها: الصورة كانت مرعبة! نبيل مربوط بشريط لاصق، يديه مكتفين، وجهه مزرق وفيه آثار خنق عميقة بقوة.</p>
+        </div>
+        <!-- حدث 5 -->
+        <div class="event-card" id="event-cp5">
+            <h3><span class="badge">15:30</span> هبوط اضطراري وحصار أمني <span class="badge loc-badge">📍 مطار كالياري الدولي (سردينيا) / أو مطار باليرمو</span></h3>
+            <p>قائد الطائرة يعلن حالة الطوارئ الطبية والأمنية (Squawk 7700) ويغير المسار بزاوية حادة. الطائرة تهبط اضطرارياً والبوليس الإيطالي يصعد فوق الطائرة فوراً قبل خروج أي راكب لبدء التحقيق الفوري محاصراً الطائرة بالكامل.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function startFlight() {
+        const airplane = document.getElementById('airplane');
+        
+        airplane.style.transition = 'none';
+        airplane.style.right = '0%';
+        
+        document.querySelectorAll('.checkpoint').forEach(cp => cp.classList.remove('active'));
+        document.querySelectorAll('.event-card').forEach(card => card.classList.remove('visible'));
+        document.getElementById('event-cp1').classList.add('visible');
+        document.getElementById('cp1').classList.add('active');
+
+        setTimeout(() => {
+            airplane.style.transition = 'right 15s linear';
+            airplane.style.right = '100%';
+        }, 100);
+
+        const timelineEvents = [
+            { id: 'cp2', time: 4500 },  
+            { id: 'cp3', time: 9000 },  
+            { id: 'cp4', time: 11250 }, 
+            { id: 'cp5', time: 15000 }  
+        ];
+
+        timelineEvents.forEach(event => {
+            setTimeout(() => {
+                document.getElementById(event.id).classList.add('active');
+                document.querySelectorAll('.event-card').forEach(card => card.classList.remove('visible'));
+                document.getElementById('event-' + event.id).classList.add('visible');
+            }, event.time);
+        });
+    }
+</script>
+
+</body>
+</html>

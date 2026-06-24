@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>معهد آيسبريت العالي للإدارة والأعمال | ISPRIT School of Business</title>
     <style>
         :root {
@@ -12,65 +12,73 @@
             --light: #f8fafc;
             --dark: #1e293b;
             --gray: #64748b;
+            --border: #cbd5e1;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--light); color: var(--dark); line-height: 1.6; overflow-x: hidden; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--light); color: var(--dark); line-height: 1.6; }
-
-        /* Header & Nav */
-        header { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000; }
-        .top-bar { background: var(--secondary); color: white; padding: 8px 20px; display: flex; justify-content: space-between; font-size: 0.8rem; }
+        header { background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000; }
+        .top-bar { background-color: var(--secondary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; }
+        .top-bar-left { display: flex; align-items: center; gap: 10px; }
+        
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; max-width: 1200px; margin: 0 auto; }
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); text-decoration: none; }
+        .logo span { color: var(--secondary); }
+        .nav-container { display: flex; align-items: center; gap: 15px; }
+        .nav-links { display: none; } /* Hidden by default on mobile */
         
-        .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); text-decoration: none; }
-        .nav-container { display: flex; align-items: center; gap: 20px; }
-        .nav-links { display: flex; list-style: none; gap: 20px; }
-        .nav-links a { text-decoration: none; color: var(--dark); font-weight: 600; font-size: 0.9rem; }
-        
-        .menu-toggle { display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--secondary); }
+        .student-login-btn { background-color: var(--primary); color: white !important; padding: 6px 15px; border-radius: 4px; font-weight: bold; text-decoration: none; font-size: 0.85rem; }
 
-        /* Mobile Responsive Navigation */
-        @media (max-width: 900px) {
-            .menu-toggle { display: block; }
-            .nav-container { 
-                display: none; flex-direction: column; position: absolute; top: 100%; right: 0; 
-                width: 100%; background: white; padding: 20px; border-bottom: 3px solid var(--primary);
-                box-shadow: 0 10px 10px rgba(0,0,0,0.1);
-            }
-            .nav-container.active { display: flex; }
-            .nav-links { flex-direction: column; width: 100%; text-align: center; gap: 15px; margin-bottom: 15px; }
+        .hero { background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(168, 35, 35, 0.9)); color: white; padding: 40px 20px; text-align: center; }
+        .hero h1 { font-size: 1.6rem; margin-bottom: 10px; }
+        .hero p { font-size: 0.95rem; opacity: 0.9; }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 15px 10px; border-radius: 6px; border-top: 3px solid var(--primary); text-align: center; }
+        .stat-card h3 { font-size: 1.5rem; color: var(--primary); }
+        .stat-card p { font-size: 0.7rem; color: var(--gray); }
+
+        .section-title { font-size: 1.4rem; margin-bottom: 20px; border-bottom: 2px solid var(--primary); display: inline-block; }
+        .news-day-group { background: white; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .news-grid { display: grid; gap: 15px; }
+        .news-card { background: var(--light); padding: 15px; border-right: 4px solid var(--primary); border-radius: 4px; }
+        .news-card h4 { font-size: 1rem; margin-bottom: 8px; }
+        .news-card p { font-size: 0.85rem; }
+        .news-meta { font-size: 0.75rem; color: var(--gray); display: block; margin-top: 8px; }
+
+        .modal-box { width: 90% !important; padding: 25px; }
+        
+        footer { padding: 30px 15px; text-align: center; }
+        .footer-grid { display: grid; gap: 20px; margin-bottom: 20px; text-align: right; }
+
+        /* Media Query for Tablets and Desktops */
+        @media (min-width: 768px) {
+            .nav-links { display: flex; list-style: none; gap: 20px; }
+            .hero { padding: 60px 20px; }
+            .hero h1 { font-size: 2.4rem; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .footer-grid { grid-template-columns: repeat(3, 1fr); }
         }
-
-        /* Content Layouts */
-        .hero { background: linear-gradient(135deg, var(--secondary), var(--primary)); color: white; padding: 50px 20px; text-align: center; }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .stats-grid, .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        
-        /* Modals & Buttons */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-box { background: white; padding: 30px; width: 90%; max-width: 400px; border-radius: 8px; position: relative; }
-        .student-login-btn { background: var(--primary); color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; }
-        
-        /* Footer */
-        footer { background: var(--secondary); color: white; padding: 40px 20px; margin-top: 50px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="top-bar">
-            <span>بوابة الإعلانات والأنشطة اليومية للطلبة</span>
-            <a href="#" style="color: #cbd5e1;">Français</a>
+            <div class="top-bar-left">
+                <span>بوابة الإعلانات والأنشطة</span>
+                <button onclick="showInfoAlert()" style="background:none; border:none; color:white; cursor:pointer;">ℹ️</button>
+            </div>
+            <a href="#" style="color:white; text-decoration:none;">Français</a>
         </div>
         <nav>
-            <a href="#" class="logo">ISPRIT</a>
-            <button class="menu-toggle" onclick="document.querySelector('.nav-container').classList.toggle('active')">☰</button>
+            <a href="#" class="logo">ISPRIT <span>SB</span></a>
             <div class="nav-container">
                 <ul class="nav-links">
                     <li><a href="#">من نحن</a></li>
-                    <li><a href="#">البرامج الأكاديمية</a></li>
-                    <li><a href="#">جداول الأوقات</a></li>
+                    <li><a href="#">البرامج</a></li>
+                    <li><a href="#">بوابة الطالب</a></li>
                 </ul>
                 <a href="#" class="student-login-btn" onclick="toggleModal(true)">Log In</a>
             </div>
@@ -79,33 +87,59 @@
 
     <div class="modal-overlay" id="loginModal">
         <div class="modal-box">
-            <span onclick="toggleModal(false)" style="float: left; cursor: pointer; font-size: 1.5rem;">&times;</span>
+            <span class="close-modal" onclick="toggleModal(false)" style="cursor:pointer; float:left;">&times;</span>
             <h3>تسجيل دخول الطلبة</h3>
-            <form onsubmit="event.preventDefault(); window.location.href='log.html'">
-                <input type="text" placeholder="اسم المستخدم" style="width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc;" required>
-                <input type="password" placeholder="كلمة المرور" style="width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc;" required>
-                <button type="submit" style="width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; cursor: pointer;">دخول</button>
+            <p id="errorMsg" style="color:var(--primary); display:none; font-size:0.85rem;">اسم المستخدم أو كلمة المرور غير صحيحة!</p>
+            <form onsubmit="validateLogin(event)">
+                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="userCode" required></div>
+                <div class="form-group"><label>كلمة المرور</label><input type="password" id="password" required></div>
+                <button type="submit" class="submit-btn">تسجيل الدخول</button>
             </form>
         </div>
     </div>
 
     <section class="hero">
-        <h1>فضاء المستجدات والأخبار اليومية</h1>
-        <p>متابعة كافة التغييرات التنظيمية والفعاليات داخل المعهد.</p>
+        <h1>فضاء المستجدات اليومية</h1>
+        <p>متابعة كافة التغييرات التنظيمية والفعاليات داخل الحرم الجامعي.</p>
     </section>
 
     <div class="container">
         <div class="stats-grid">
-            <div style="background: white; padding: 20px; border-top: 4px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                <h3>1,825</h3>
-                <p>إجمالي الخريجين</p>
+            <div class="stat-card"><h3>1,825</h3><p>خريج</p></div>
+            <div class="stat-card"><h3>17</h3><p>جنسية</p></div>
+            <div class="stat-card"><h3>86%</h3><p>اندماج مهني</p></div>
+            <div class="stat-card"><h3>12</h3><p>شراكة</p></div>
+        </div>
+
+        <h2 class="section-title">الأخبار والمستجدات</h2>
+        <div class="news-timeline">
+            <div class="news-day-group">
+                <span style="background:var(--secondary); color:white; padding:2px 8px; font-size:0.8rem;">10 جانفي</span>
+                <div class="news-grid">
+                    <div class="news-card urgent">
+                        <h4>تحيين جدول الامتحانات</h4>
+                        <p>تعديل جزئي في جدول أوقات امتحانات السداسي الأول.</p>
+                    </div>
+                </div>
             </div>
-            </div>
+        </div>
     </div>
 
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col"><h4>معهد ISPRIT</h4><p>مؤسسة جامعية خاصة.</p></div>
+            <div class="footer-col"><h4>اتصال</h4><p>Ariana, Tunisia<br>contact@isprit-school.tn</p></div>
+        </div>
+    </footer>
+
     <script>
-        function toggleModal(show) {
-            document.getElementById('loginModal').style.display = show ? 'flex' : 'none';
+        function toggleModal(show) { document.getElementById('loginModal').style.display = show ? 'flex' : 'none'; }
+        function showInfoAlert() { alert("للوصول إلى حسابك، يرجى استخدام البريد الجامعي ورقم CIN."); }
+        function validateLogin(event) {
+            event.preventDefault();
+            if (document.getElementById('userCode').value === 'feriel@university.com' && document.getElementById('password').value === '898010010') {
+                window.location.href = 'log.html';
+            } else { document.getElementById('errorMsg').style.display = 'block'; }
         }
     </script>
 </body>

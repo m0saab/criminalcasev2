@@ -1,561 +1,727 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPhone Simulator</title>
-    <style>
-        :root {
-            --ios-bg: #000;
-            --ios-text: #fff;
-            --ios-gray: #1c1c1e;
-            --ios-light-gray: #2c2c2e;
-            --ios-blue: #0a84ff;
-            --ios-red: #ff453a;
-        }
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'SF Pro Display', Arial, sans-serif; }
+  #phone {
+    width: 375px; height: 780px; background: #000; border-radius: 50px;
+    border: 8px solid #1a1a1a; position: relative; overflow: hidden;
+    box-shadow: 0 0 0 2px #333, inset 0 0 0 1px #555;
+    margin: 10px auto; display: flex; flex-direction: column;
+  }
+  .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 130px; height: 28px; background: #000; border-radius: 0 0 18px 18px;
+    z-index: 100;
+  }
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 20px 4px; font-size: 12px; font-weight: 600; color: #fff;
+    position: relative; z-index: 50; flex-shrink: 0;
+  }
+  .screen {
+    flex: 1; background: #000; overflow: hidden; position: relative;
+    display: flex; flex-direction: column;
+  }
+  /* LOCK SCREEN */
+  #lockScreen {
+    position: absolute; inset: 0; background: linear-gradient(160deg, #0a0a2e 0%, #1a0a3e 50%, #0d1a3e 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 90;
+  }
+  .lock-time { font-size: 64px; font-weight: 200; color: #fff; line-height: 1; }
+  .lock-date { font-size: 16px; color: rgba(255,255,255,0.8); margin-top: 8px; margin-bottom: 40px; }
+  .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 260px; }
+  .key {
+    width: 76px; height: 76px; border-radius: 50%; background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 300; color: #fff; cursor: pointer;
+    transition: background 0.1s;
+  }
+  .key:active, .key.pressed { background: rgba(255,255,255,0.45); }
+  .pin-dots { display: flex; gap: 16px; margin-bottom: 24px; }
+  .pin-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; background: transparent; transition: background 0.2s; }
+  .pin-dot.filled { background: #fff; }
+  .key-del { background: transparent; font-size: 20px; }
+  .key-del:active { background: rgba(255,255,255,0.2); }
+  /* HOME SCREEN */
+  #homeScreen {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #1c3a6e 0%, #2d1b69 100%);
+    display: none; flex-direction: column;
+  }
+  .home-time { font-size: 48px; font-weight: 200; color: #fff; text-align: center; padding: 20px 0 4px; }
+  .home-date-sm { font-size: 13px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 20px; }
+  .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 0 20px; flex: 1; align-content: start; }
+  .app-icon {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+  }
+  .app-icon-img {
+    width: 60px; height: 60px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: #fff; font-weight: 700;
+  }
+  .app-label { font-size: 11px; color: #fff; text-align: center; }
+  .dock {
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+    border-radius: 24px; margin: 10px 16px; padding: 10px;
+    display: flex; justify-content: space-around;
+  }
+  /* APP SCREENS */
+  .app-screen {
+    position: absolute; inset: 0; background: #f2f2f7;
+    display: none; flex-direction: column; overflow: hidden;
+  }
+  .app-header {
+    background: #f2f2f7; padding: 44px 16px 8px;
+    border-bottom: 0.5px solid #c8c8ce; flex-shrink: 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .app-header-title { font-size: 17px; font-weight: 600; color: #000; flex: 1; text-align: center; direction: rtl; }
+  .back-btn { font-size: 16px; color: #007aff; cursor: pointer; display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+  .app-content { flex: 1; overflow-y: auto; }
+  /* EMAIL */
+  .email-item {
+    background: #fff; padding: 12px 16px; border-bottom: 0.5px solid #c8c8ce;
+    cursor: pointer; display: flex; gap: 10px; direction: rtl; align-items: flex-start;
+  }
+  .email-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #fff; flex-shrink: 0; }
+  .email-content { flex: 1; min-width: 0; }
+  .email-sender { font-size: 15px; font-weight: 600; color: #000; }
+  .email-subject { font-size: 13px; color: #3c3c43; margin-top: 1px; }
+  .email-preview { font-size: 13px; color: #8e8e93; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .email-time { font-size: 12px; color: #8e8e93; flex-shrink: 0; }
+  .unread-dot { width: 10px; height: 10px; border-radius: 50%; background: #007aff; flex-shrink: 0; margin-top: 4px; }
+  /* EMAIL DETAIL */
+  #emailDetail { position: absolute; inset: 0; background: #fff; display: none; flex-direction: column; overflow: hidden; }
+  .email-detail-header { background: #f2f2f7; padding: 44px 16px 10px; border-bottom: 0.5px solid #c8c8ce; flex-shrink: 0; }
+  .email-detail-subject { font-size: 20px; font-weight: 700; color: #000; direction: rtl; margin-bottom: 6px; }
+  .email-detail-meta { font-size: 13px; color: #8e8e93; direction: rtl; }
+  .email-detail-body { padding: 16px; overflow-y: auto; flex: 1; direction: rtl; line-height: 1.7; color: #000; font-size: 15px; }
+  /* MESSAGES */
+  .msg-item { background: #fff; padding: 12px 16px; border-bottom: 0.5px solid #c8c8ce; cursor: pointer; display: flex; gap: 10px; direction: rtl; align-items: center; }
+  .msg-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .msg-name { font-size: 15px; font-weight: 600; color: #000; }
+  .msg-preview { font-size: 13px; color: #8e8e93; margin-top: 2px; }
+  .msg-time { font-size: 12px; color: #8e8e93; flex-shrink: 0; margin-top: 2px; }
+  /* CHAT */
+  #chatScreen { position: absolute; inset: 0; background: #000; display: none; flex-direction: column; overflow: hidden; }
+  .chat-header { background: #1c1c1e; padding: 44px 16px 10px; border-bottom: 0.5px solid #333; flex-shrink: 0; text-align: center; }
+  .chat-name { font-size: 17px; font-weight: 600; color: #fff; }
+  .chat-sub { font-size: 12px; color: #8e8e93; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #000; display: flex; flex-direction: column; gap: 10px; }
+  .bubble { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.5; direction: rtl; }
+  .bubble.sent { background: #1c7a3e; color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+  .bubble.recv { background: #1c1c1e; color: #fff; border-bottom-left-radius: 4px; align-self: flex-start; }
+  .bubble-time { font-size: 11px; color: #8e8e93; text-align: center; margin: 4px 0; }
+  /* INVESTOR APP */
+  #investorApp { position: absolute; inset: 0; display: none; flex-direction: column; overflow: hidden; background: #0a1628; }
+  .inv-header { padding: 44px 16px 12px; background: #0a1628; flex-shrink: 0; }
+  .inv-title { font-size: 22px; font-weight: 700; color: #fff; direction: rtl; }
+  .inv-subtitle { font-size: 13px; color: #8ba4d0; direction: rtl; margin-top: 4px; }
+  .inv-total { background: #1a2e50; border-radius: 14px; margin: 0 16px 12px; padding: 14px 16px; direction: rtl; }
+  .inv-total-label { font-size: 12px; color: #8ba4d0; }
+  .inv-total-val { font-size: 26px; font-weight: 700; color: #4caf8a; margin-top: 4px; }
+  .inv-list { flex: 1; overflow-y: auto; padding: 0 16px 16px; }
+  .inv-item { background: #1a2e50; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; direction: rtl; display: flex; justify-content: space-between; align-items: center; }
+  .inv-co { font-size: 14px; font-weight: 600; color: #e0ecff; }
+  .inv-cat { font-size: 11px; color: #8ba4d0; margin-top: 2px; }
+  .inv-amt { font-size: 15px; font-weight: 700; color: #4caf8a; }
+  .inv-special { background: #2a1a10; border: 1px solid #c0440a; }
+  .inv-special .inv-co { color: #ffb680; }
+  .inv-special .inv-amt { color: #ff7043; }
+  /* APP STORE */
+  #appStoreApp { position: absolute; inset: 0; display: none; flex-direction: column; background: #f2f2f7; overflow: hidden; }
+  .as-header { background: #fff; padding: 44px 16px 10px; border-bottom: 0.5px solid #c8c8ce; flex-shrink: 0; }
+  .as-title { font-size: 22px; font-weight: 700; color: #000; margin-bottom: 10px; }
+  .as-search { display: flex; align-items: center; background: #e5e5ea; border-radius: 10px; padding: 8px 12px; gap: 8px; }
+  .as-search input { border: none; background: transparent; font-size: 15px; flex: 1; outline: none; color: #000; }
+  .as-content { flex: 1; overflow-y: auto; padding: 16px; }
+  .as-result { background: #fff; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .as-app-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+  .as-app-name { font-size: 16px; font-weight: 600; color: #000; }
+  .as-app-cat { font-size: 13px; color: #8e8e93; margin-top: 2px; }
+  .as-get-btn { background: #e5e5ea; border-radius: 14px; padding: 6px 16px; font-size: 14px; font-weight: 600; color: #007aff; cursor: pointer; margin-left: auto; flex-shrink: 0; }
+  .as-no-result { text-align: center; color: #8e8e93; padding: 40px 20px; font-size: 15px; }
+  /* TrueCaller */
+  #trueCallerApp { position: absolute; inset: 0; display: none; flex-direction: column; background: #0057b7; overflow: hidden; }
+  .tc-header { background: #0046a0; padding: 44px 16px 12px; flex-shrink: 0; }
+  .tc-title { font-size: 22px; font-weight: 700; color: #fff; }
+  .tc-search { display: flex; align-items: center; background: rgba(255,255,255,0.15); border-radius: 10px; padding: 10px 14px; gap: 8px; margin-top: 10px; }
+  .tc-search input { border: none; background: transparent; font-size: 15px; flex: 1; outline: none; color: #fff; }
+  .tc-search input::placeholder { color: rgba(255,255,255,0.6); }
+  .tc-content { flex: 1; overflow-y: auto; padding: 16px; }
+  .tc-result { background: #fff; border-radius: 12px; padding: 16px; text-align: center; }
+  .tc-name { font-size: 22px; font-weight: 700; color: #0057b7; }
+  .tc-number { font-size: 15px; color: #555; margin-top: 4px; }
+  .tc-badge { background: #e8f0ff; color: #0046a0; font-size: 12px; border-radius: 8px; padding: 4px 10px; margin-top: 8px; display: inline-block; }
+  .tc-not-found { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; color: rgba(255,255,255,0.7); font-size: 15px; }
+  /* LOADING */
+  #loadingScreen { position: absolute; inset: 0; background: #0057b7; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 200; }
+  .loading-logo { font-size: 48px; font-weight: 900; color: #fff; letter-spacing: -2px; margin-bottom: 8px; }
+  .loading-sub { font-size: 16px; color: rgba(255,255,255,0.7); margin-bottom: 40px; }
+  .loading-bar { width: 200px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; }
+  .loading-fill { height: 100%; background: #fff; border-radius: 2px; width: 0%; transition: width 0.3s; }
+  /* HOME INDICATOR */
+  .home-indicator { height: 28px; display: flex; align-items: center; justify-content: center; background: #000; flex-shrink: 0; }
+  .home-bar { width: 120px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
+</style>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
-        }
+<div id="phone">
+  <div class="notch"></div>
+  <div class="status-bar">
+    <span>●●●●● WiFi 🔋</span>
+  </div>
+  <div class="screen">
 
-        body {
-            background-color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            direction: rtl;
-        }
-
-        /* Phone Container */
-        .iphone-container {
-            width: 393px;
-            height: 852px;
-            background-color: var(--ios-bg);
-            border: 12px solid #222;
-            border-radius: 55px;
-            position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Dynamic Island */
-        .dynamic-island {
-            position: absolute;
-            top: 11px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 110px;
-            height: 30px;
-            background-color: #000;
-            border-radius: 20px;
-            z-index: 9999;
-        }
-
-        /* Screen States */
-        .screen {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transition: all 0.5s ease-in-out;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.95);
-        }
-
-        /* --- 1. LOCK SCREEN --- */
-        #lock-screen {
-            background: linear-gradient(180deg, #1f3c3d 0%, #0d1b2a 100%);
-            justify-content: space-between;
-            align-items: center;
-            padding: 60px 30px 50px 30px;
-            z-index: 10;
-        }
-
-        .lock-header {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .lock-icon {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .passcode-prompt {
-            font-size: 18px;
-            color: var(--ios-text);
-            font-weight: 500;
-        }
-
-        .dots-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-            justify-content: center;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border: 1.5px solid var(--ios-text);
-            border-radius: 50%;
-            transition: background-color 0.1s;
-        }
-
-        .dot.filled {
-            background-color: var(--ios-text);
-        }
-
-        .dot.error {
-            border-color: var(--ios-red);
-            background-color: var(--ios-red);
-        }
-
-        /* Keypad */
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            width: 280px;
-            margin-bottom: 30px;
-        }
-
-        .key {
-            width: 75px;
-            height: 75px;
-            background-color: rgba(255, 255, 255, 0.16);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: var(--ios-text);
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: background-color 0.1s;
-        }
-
-        .key:active {
-            background-color: rgba(255, 255, 255, 0.4);
-        }
-
-        .key span:first-child {
-            font-size: 30px;
-            font-weight: 400;
-        }
-
-        .key span:last-child {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin-top: -2px;
-        }
-
-        /* --- 2. MAIL APP --- */
-        #mail-screen {
-            background-color: #000;
-            color: var(--ios-text);
-            padding-top: 45px;
-            z-index: 5;
-        }
-
-        .mail-header {
-            padding: 15px 16px 10px 16px;
-            border-bottom: 1px solid #2c2c2e;
-        }
-
-        .mail-header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--ios-blue);
-            font-size: 17px;
-            margin-bottom: 5px;
-        }
-
-        .mail-title {
-            font-size: 34px;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .mail-meta {
-            font-size: 13px;
-            color: #8e8e93;
-            margin-top: 4px;
-        }
-
-        .mail-list {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 40px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            padding: 15px 16px 8px 16px;
-            background-color: #121212;
-            color: #aeaeac;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Mail Item */
-        .mail-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid #1c1c1e;
-            background-color: #000;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            position: relative;
-        }
-
-        .mail-item.unread::before {
-            content: '';
-            position: absolute;
-            right: 6px;
-            top: 18px;
-            width: 8px;
-            height: 8px;
-            background-color: var(--ios-blue);
-            border-radius: 50%;
-        }
-
-        .mail-item-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-
-        .mail-sender {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--ios-text);
-            max-width: 75%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .mail-time {
-            font-size: 14px;
-            color: #8e8e93;
-        }
-
-        .mail-subject {
-            font-size: 14px;
-            font-weight: 500;
-            color: #f2f2f7;
-        }
-
-        .mail-snippet {
-            font-size: 14px;
-            color: #8e8e93;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .attachment {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background-color: var(--ios-gray);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: var(--ios-blue);
-            margin-top: 4px;
-            width: fit-content;
-        }
-
-        /* Custom Scrollbar */
-        .mail-list::-webkit-scrollbar {
-            width: 5px;
-        }
-        .mail-list::-webkit-scrollbar-thumb {
-            background: #3a3a3c;
-            border-radius: 10px;
-        }
-
-        /* Shake animation for wrong passcode */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
-        }
-        .shake {
-            animation: shake 0.4s ease-in-out;
-        }
-    </style>
-</head>
-<body>
-
-<div class="iphone-container">
-    <div class="dynamic-island"></div>
-
-    <!-- 1. LOCK SCREEN -->
-    <div id="lock-screen" class="screen">
-        <div class="lock-header">
-            <div class="lock-icon">🔒</div>
-            <div class="passcode-prompt" id="prompt-text">أدخل رمز الدخول</div>
-            <div class="dots-container" id="dots-box">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-        </div>
-
-        <div class="keypad">
-            <div class="key" onclick="pressNum('1')"><span>1</span><span>&nbsp;</span></div>
-            <div class="key" onclick="pressNum('2')"><span>2</span><span>A B C</span></div>
-            <div class="key" onclick="pressNum('3')"><span>3</span><span>D E F</span></div>
-            <div class="key" onclick="pressNum('4')"><span>4</span><span>G H I</span></div>
-            <div class="key" onclick="pressNum('5')"><span>5</span><span>J K L</span></div>
-            <div class="key" onclick="pressNum('6')"><span>6</span><span>M N O</span></div>
-            <div class="key" onclick="pressNum('7')"><span>7</span><span>P Q R S</span></div>
-            <div class="key" onclick="pressNum('8')"><span>8</span><span>T U V</span></div>
-            <div class="key" onclick="pressNum('9')"><span>9</span><span>W X Y Z</span></div>
-            <div class="key" style="visibility: hidden;"></div>
-            <div class="key" onclick="pressNum('0')"><span>0</span><span>+</span></div>
-            <div class="key" onclick="deleteNum()" style="background: transparent; backdrop-filter: none; font-size: 15px;">حذف</div>
-        </div>
+    <!-- LOCK SCREEN -->
+    <div id="lockScreen">
+      <div class="pin-dots" id="pinDots">
+        <div class="pin-dot" id="d0"></div>
+        <div class="pin-dot" id="d1"></div>
+        <div class="pin-dot" id="d2"></div>
+        <div class="pin-dot" id="d3"></div>
+      </div>
+      <div class="keypad">
+        <div class="key" onclick="pressKey('1')">1</div>
+        <div class="key" onclick="pressKey('2')">2</div>
+        <div class="key" onclick="pressKey('3')">3</div>
+        <div class="key" onclick="pressKey('4')">4</div>
+        <div class="key" onclick="pressKey('5')">5</div>
+        <div class="key" onclick="pressKey('6')">6</div>
+        <div class="key" onclick="pressKey('7')">7</div>
+        <div class="key" onclick="pressKey('8')">8</div>
+        <div class="key" onclick="pressKey('9')">9</div>
+        <div class="key" style="background:transparent;"></div>
+        <div class="key" onclick="pressKey('0')">0</div>
+        <div class="key key-del" onclick="delKey()">⌫</div>
+      </div>
     </div>
 
-    <!-- 2. MAIL APP SCREEN -->
-    <div id="mail-screen" class="screen hidden">
-        <div class="mail-header">
-            <div class="mail-header-top">
-                <span>صناديق البريد</span>
-                <span style="font-weight: 600;">تحرير</span>
-            </div>
-            <div class="mail-title">صندوق الوارد</div>
-            <div class="mail-meta">صندوق بريد نبيل الزرقي — آخر تحديث: 11 جوان 2026، 13:52</div>
+    <!-- HOME SCREEN -->
+    <div id="homeScreen">
+      <div class="app-grid">
+        <div class="app-icon" onclick="openApp('emailApp')">
+          <div class="app-icon-img" style="background:#007aff;">✉️</div>
+          <div class="app-label">البريد</div>
         </div>
-
-        <div class="mail-list">
-            <div class="section-title">📧 صندوق الوارد (12 رسالة غير مقروءة)</div>
-
-            <!-- Mail 1 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">Maître Khaled Bouaziz</span>
-                    <span class="mail-time">09:14</span>
-                </div>
-                <div class="mail-subject">وثائق متفرقة — للأرشيف فقط</div>
-                <div class="mail-snippet">السيد نبيل، أرسل لكم نسخة محدثة من بعض الوثائق العائلية للأرشفة. لا حاجة للرد، فقط احتفظوا بنسخة لديكم تحسباً.</div>
-                <div class="attachment">📎 Docs_Archive_2026.pdf</div>
-            </div>
-
-            <!-- Mail 2 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">Sophie Lambert — Lambert Immobilier Paris</span>
-                    <span class="mail-time">08:30</span>
-                </div>
-                <div class="mail-subject">RE: Signature finale — Rendez-vous 16h30</div>
-                <div class="mail-snippet" dir="ltr" style="text-align: right;">Bonjour Nabil, tout est prêt pour la signature à 16h30. À tout à l'heure...</div>
-            </div>
-
-            <!-- Mail 3 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">غير معروف</span>
-                    <span class="mail-time">07:45</span>
-                </div>
-                <div class="mail-subject">(بدون عنوان)</div>
-                <div class="mail-snippet">في كل مرة تقول "هذي آخر مرة" وتعاود نفس الشيء. توة فهمت وين وصلنا.</div>
-            </div>
-
-            <!-- Mail 4 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">هند الزرقي</span>
-                    <span class="mail-time">أمس</span>
-                </div>
-                <div class="mail-subject">الأولاد يسألوا عليك</div>
-                <div class="mail-snippet">التوأم يسألوا عليك كل يوم. حاول تكون أكثر حضوراً.</div>
-            </div>
-
-            <!-- Mail 5 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">Karim Selmi — Selmi & Partners Investment</span>
-                    <span class="mail-time">أمس</span>
-                </div>
-                <div class="mail-subject">Confidentiel — Dossier Cardinal</div>
-                <div class="mail-snippet" dir="ltr" style="text-align: right;">Nabil, le dossier doit rester strictement entre nous jusqu'à la signature de demain à Paris. Aucune fuite avant la clôture, c'est crucial pour tout le monde impliqué.</div>
-            </div>
-
-            <!-- Mail 6 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">غير معروف (رقم محجوب)</span>
-                    <span class="mail-time">9 جوان</span>
-                </div>
-                <div class="mail-subject">آخر تحذير</div>
-                <div class="mail-snippet">عرفت كل شيء. وما باش نسكت. تنتظرك مفاجأة قريبة.</div>
-            </div>
-
-            <!-- Mail 7 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">Anonymous Account</span>
-                    <span class="mail-time">8 جوان</span>
-                </div>
-                <div class="mail-subject">RE: تسوية</div>
-                <div class="mail-snippet">كل واحد عندو حقه. وأنت تعرف هذا أحسن من أي واحد. السكوت ما عادش يكفي.</div>
-            </div>
-
-            <!-- Mail 8 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">Dr. Amine Cherif — Clinique Internationale</span>
-                    <span class="mail-time">5 جوان</span>
-                </div>
-                <div class="mail-subject">متابعة — سري</div>
-                <div class="mail-snippet">السيد نبيل، النتائج جاهزة. ضروري نتقابلوا بسرعة. الموضوع لا يحتمل التأجيل أكثر من أسبوعين.</div>
-            </div>
-
-            <!-- Mail 9 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">Sophie Lambert — Lambert Immobilier Paris</span>
-                    <span class="mail-time">3 جوان</span>
-                </div>
-                <div class="mail-subject">Contrat — Pénalités de retard</div>
-                <div class="mail-snippet" dir="ltr" style="text-align: right;">Nabil, tout retard après le 15 juin entraînera des pénalités selon l'article 7...</div>
-            </div>
-
-            <!-- Mail 10 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">هند الزرقي</span>
-                    <span class="mail-time">2 جوان</span>
-                </div>
-                <div class="mail-subject">اتصل بيا كي توصل</div>
-                <div class="mail-snippet">خبرني كي تحط في الطيارة، ونتفقوا وين نتلاقوا في باريس.</div>
-            </div>
-
-            <!-- Mail 11 -->
-            <div class="mail-item">
-                <div class="mail-item-top">
-                    <span class="mail-sender">LinkedIn</span>
-                    <span class="mail-time">1 جوان</span>
-                </div>
-                <div class="mail-subject">Karim Selmi commented on your post</div>
-                <div class="mail-snippet">[إشعار تلقائي]</div>
-            </div>
-
-            <!-- Mail 12 -->
-            <div class="mail-item unread">
-                <div class="mail-item-top">
-                    <span class="mail-sender">غير معروف</span>
-                    <span class="mail-time">28 ماي</span>
-                </div>
-                <div class="mail-subject">(بدون عنوان)</div>
-                <div class="mail-snippet">نعرف وين تكون يوم الإثنين الجاي. خود حذرك.</div>
-            </div>
-
-            <!-- Deleted Section -->
-            <div class="section-title">🗑️ المحذوفة مؤخراً (استرجعت من النسخة الاحتياطية)</div>
-            
-            <div class="mail-item" style="background-color: #0b0b0c;">
-                <div class="mail-item-top">
-                    <span class="mail-sender" style="color: #ff453a;">إلى نفسي — ملاحظة</span>
-                    <span class="mail-time">9 جوان</span>
-                </div>
-                <div class="mail-subject">(بدون عنوان)</div>
-                <div class="mail-snippet" style="color: #aeaeac;">برشا ناس قاعدين يحومو حولي توة. لازم نخمم كيفاش نحمي روحي قبل باريس.</div>
-            </div>
+        <div class="app-icon" onclick="openApp('messagesApp')">
+          <div class="app-icon-img" style="background:#34c759;">💬</div>
+          <div class="app-label">الرسائل</div>
         </div>
+        <div class="app-icon" onclick="openApp('investorApp')">
+          <div class="app-icon-img" style="background:#ff9500;">📈</div>
+          <div class="app-label">المستثمر</div>
+        </div>
+        <div class="app-icon" onclick="openAppStore()">
+          <div class="app-icon-img" style="background: linear-gradient(135deg,#1a8cff,#00c7ff);">🏪</div>
+          <div class="app-label">App Store</div>
+        </div>
+        <div class="app-icon" style="cursor:default;opacity:0.6;">
+          <div class="app-icon-img" style="background:#555;">📷</div>
+          <div class="app-label">الكاميرا</div>
+        </div>
+        <div class="app-icon" style="cursor:default;opacity:0.6;">
+          <div class="app-icon-img" style="background:#8e8e93;">⚙️</div>
+          <div class="app-label">الإعدادات</div>
+        </div>
+        <div class="app-icon" style="cursor:default;opacity:0.6;">
+          <div class="app-icon-img" style="background:#34c759;">🗺️</div>
+          <div class="app-label">الخرائط</div>
+        </div>
+        <div class="app-icon" style="cursor:default;opacity:0.6;">
+          <div class="app-icon-img" style="background:#fff;border:1px solid #ddd;">📅</div>
+          <div class="app-label">التقويم</div>
+        </div>
+      </div>
     </div>
+
+    <!-- EMAIL APP -->
+    <div class="app-screen" id="emailApp">
+      <div class="app-header">
+        <div class="back-btn" onclick="goHome()">← الرئيسية</div>
+        <div class="app-header-title">البريد الإلكتروني</div>
+      </div>
+      <div class="app-content" id="emailList">
+        <!-- emails injected by JS -->
+      </div>
+    </div>
+
+    <!-- EMAIL DETAIL -->
+    <div id="emailDetail">
+      <div class="email-detail-header">
+        <div class="back-btn" onclick="closeEmailDetail()" style="margin-bottom:8px;">← رجوع</div>
+        <div class="email-detail-subject" id="detailSubject"></div>
+        <div class="email-detail-meta" id="detailMeta"></div>
+      </div>
+      <div class="email-detail-body" id="detailBody"></div>
+    </div>
+
+    <!-- MESSAGES APP -->
+    <div class="app-screen" id="messagesApp">
+      <div class="app-header">
+        <div class="back-btn" onclick="goHome()">← الرئيسية</div>
+        <div class="app-header-title">الرسائل</div>
+      </div>
+      <div class="app-content">
+        <div class="msg-item" onclick="openChat()">
+          <div class="msg-avatar" style="background:#555;">5️⃣</div>
+          <div style="flex:1;direction:rtl;">
+            <div class="msg-name">50900000</div>
+            <div class="msg-preview">كل شيء جاهز. سيصدّقون كل شيء.</div>
+          </div>
+          <div>
+            <div class="msg-time">أمس</div>
+            <div style="width:10px;height:10px;border-radius:50%;background:#007aff;margin-top:4px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT SCREEN -->
+    <div id="chatScreen">
+      <div class="chat-header">
+        <div class="back-btn" onclick="closeChat()" style="color:#fff;">← رجوع</div>
+        <div class="chat-name">50900000</div>
+        
+      </div>
+      <div class="chat-messages">
+        <div class="bubble recv">متى ستكون جاهزاً؟</div>
+        <div class="bubble sent">كل شيء جاهز. سيصدّقون كل شيء. انطلق الآن.</div>
+        <div class="bubble-time">تم التسليم ✓✓</div>
+      </div>
+    </div>
+
+    <!-- INVESTOR APP LOCK -->
+    <div id="investorLock" style="position:absolute;inset:0;background:#0a1628;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:95;">
+      <div style="font-size:40px;margin-bottom:10px;">🔒</div>
+      <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:6px;">محفظة نبيه الاستثمارية</div>
+      <div style="font-size:13px;color:#8ba4d0;margin-bottom:28px;">أدخل كلمة المرور للوصول</div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;" id="invPwDots">
+        <div style="width:12px;height:12px;border-radius:50%;border:2px solid #8ba4d0;background:transparent;" id="ipd0"></div>
+        <div style="width:12px;height:12px;border-radius:50%;border:2px solid #8ba4d0;background:transparent;" id="ipd1"></div>
+        <div style="width:12px;height:12px;border-radius:50%;border:2px solid #8ba4d0;background:transparent;" id="ipd2"></div>
+        <div style="width:12px;height:12px;border-radius:50%;border:2px solid #8ba4d0;background:transparent;" id="ipd3"></div>
+        </div>
+      <div id="invPwError" style="font-size:13px;color:#ff6b6b;height:18px;margin-bottom:10px;"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:260px;">
+        <div onclick="invPwKey('1')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">1</div>
+        <div onclick="invPwKey('2')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">2</div>
+        <div onclick="invPwKey('3')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">3</div>
+        <div onclick="invPwKey('4')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">4</div>
+        <div onclick="invPwKey('5')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">5</div>
+        <div onclick="invPwKey('6')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">6</div>
+        <div onclick="invPwKey('7')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">7</div>
+        <div onclick="invPwKey('8')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">8</div>
+        <div onclick="invPwKey('9')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">9</div>
+        <div onclick="invPwKeyCancel()" style="width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#8ba4d0;font-size:14px;cursor:pointer;">إلغاء</div>
+        <div onclick="invPwKey('0')" style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:300;cursor:pointer;">0</div>
+        <div onclick="invPwKeyDel()" style="width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#8ba4d0;font-size:20px;cursor:pointer;">⌫</div>
+      </div>
+    </div>
+
+    <!-- INVESTOR APP -->
+    <div id="investorApp">
+      <div class="inv-header">
+        <div class="back-btn" onclick="goHome()" style="color:#8ba4d0;font-size:14px;margin-bottom:6px;">← الرئيسية</div>
+        <div class="inv-title">محفظة نبيه الاستثمارية</div>
+        <div class="inv-subtitle">15 استثمار نشط</div>
+      </div>
+      <div class="inv-total">
+        <div class="inv-total-label">إجمالي المحفظة</div>
+        <div class="inv-total-val" id="invTotal">يحسب...</div>
+      </div>
+      <div class="inv-list" id="invList"></div>
+    </div>
+
+    <!-- APP STORE -->
+    <div id="appStoreApp">
+      <div class="as-header">
+        <div class="back-btn" onclick="goHome()">← الرئيسية</div>
+        <div class="as-title">App Store</div>
+        <div class="as-search">
+          <span style="color:#8e8e93;">🔍</span>
+          <input type="text" id="asSearch" placeholder="البحث عن تطبيقات..." oninput="searchApps()" />
+        </div>
+      </div>
+      <div class="as-content" id="asContent">
+        <div style="color:#8e8e93;font-size:14px;text-align:center;padding:30px 20px;">ابحث عن تطبيقك المفضل</div>
+      </div>
+    </div>
+
+    <!-- TRUECALLER -->
+    <div id="trueCallerApp">
+      <div class="tc-header">
+        <div class="back-btn" onclick="closeTC()" style="color:rgba(255,255,255,0.8);">← رجوع</div>
+        <div class="tc-title">Truecaller</div>
+        <div class="tc-search">
+          <span>🔍</span>
+          <input type="text" id="tcSearch" placeholder="ابحث عن رقم أو اسم..." oninput="searchTC()" />
+        </div>
+      </div>
+      <div class="tc-content" id="tcContent">
+        <div style="color:rgba(255,255,255,0.5);font-size:14px;text-align:center;padding:30px 20px;">اكتب رقم هاتف للبحث عنه</div>
+      </div>
+    </div>
+
+    <!-- LOADING SCREEN (Truecaller) -->
+    <div id="loadingScreen">
+      <div class="loading-logo">truecaller</div>
+      <div class="loading-sub">جارٍ تحميل التطبيق...</div>
+      <div class="loading-bar"><div class="loading-fill" id="loadFill"></div></div>
+    </div>
+
+  </div>
+  <div class="home-indicator" onclick="goHome()">
+    <div class="home-bar"></div>
+  </div>
 </div>
 
 <script>
-    const CORRECT_PIN = "070111";
-    let currentInput = "";
+let pinEntered = '';
+const CORRECT_PIN = '0609';
+let currentEmailIndex = -1;
 
-    const dots = document.querySelectorAll('.dot');
-    const lockScreen = document.getElementById('lock-screen');
-    const mailScreen = document.getElementById('mail-screen');
-    const dotsBox = document.getElementById('dots-box');
-    const promptText = document.getElementById('prompt-text');
+const emails = [
+  {
+    avatar: 'ر', color: '#ff3b30', sender: 'رويترز عربي', subject: 'عاجل: اندماج كبير في قطاع التكنولوجيا',
+    preview: 'أعلنت اليوم شركة عملاقة عن اندماج بقيمة 12 مليار دولار...',
+    time: '10:22', unread: true,
+    body: 'تونس - كشفت مصادر موثوقة أن عملية اندماج ضخمة تجري بين شركتين رائدتين في قطاع التكنولوجيا المالية بالمنطقة. تُقدَّر قيمة الصفقة بأكثر من 12 مليار دينار تونسي، وسط ترقب كبير من المستثمرين والمحللين الاقتصاديين. يُرجَّح أن يُعلَن رسمياً عن هذه الصفقة الأسبوع القادم.'
+  },
+  {
+    avatar: 'ز', color: '#ff9500', sender: 'زوجتي', subject: 'رحلة موفقة يا حبيبي ✈️',
+    preview: 'أتمنى لك رحلة ممتازة وسالمة...',
+    time: 'أمس', unread: true,
+    body: 'حبيبي نبيه، أتمنى لك رحلة ممتازة وسالمة إلى باريس. اعتنِ بنفسك وكلني منك، ولا تنسى تتصل بيّ حين تصل. أحبك كثيراً والأولاد يسلّمون عليك. بانتظار رجوعك بسلامة، زوجتك المحبة.'
+  },
+  {
+    avatar: '؟', color: '#8e8e93', sender: 'مجهول', subject: 'اجتماع عمل في باريس - عاجل',
+    preview: 'كما اتفقنا، الاجتماع محدد في باريس يوم...',
+    time: 'أمس', unread: true,
+    body: 'السيد نبيه، كما تم الاتفاق مسبقاً، سيُعقد الاجتماع في مقر الشركة الكائن بشارع الشانزيليزيه، باريس، يوم الثلاثاء القادم الساعة العاشرة صباحاً. يُرجى الحضور مع كافة الوثائق المطلوبة. التفاصيل الكاملة ستُرسل لاحقاً على هاتفك المحمول.'
+  },
+  {
+    avatar: 'م', color: '#007aff', sender: 'المحامي', subject: 'تحديث ملف قضيتكم',
+    preview: 'متى يمكنك الحضور للمراجعة؟ لدينا تطورات مهمة...',
+    time: 'الاثنين', unread: false,
+    body: 'السيد نبيه المحترم، بخصوص ملف قضيتكم رقم 2024/1187، أودّ إعلامكم أن هناك تطورات جوهرية تستلزم حضوركم الشخصي. متى يمكنكم التشريف للمراجعة؟ الوضع يستوجب الاستعجال وننتظر قراركم في أقرب وقت ممكن. مع فائق الاحترام، الأستاذ فلان فلان، محامٍ معتمد.'
+  },
+  {
+    avatar: 'ب', color: '#34c759', sender: 'بنك الأمان', subject: 'إعادة تعيين كلمة مرور المحفظة',
+    preview: 'طلب إعادة تعيين كلمة مرور التطبيق الاستثماري...',
+    time: 'الأحد', unread: false,
+    body: 'عميلنا العزيز السيد نبيه،\n\nتلقّينا طلباً لإعادة تعيين كلمة مرور تطبيق المحفظة الاستثمارية المرتبط بحسابكم.\n\nللتحقق من هويتكم واسترداد كلمة المرور، يُرجى إدخال رقم هاتفكم المسجّل في النظام في الخانة أدناه.\n\nتنبيه أمني: لا تشارك هذه المعلومات مع أي شخص.',
+    isPasswordReset: true
+  },
+  {
+    avatar: 'ش', color: '#af52de', sender: 'شركة الأفق للتوظيف', subject: 'عرض عمل حصري لك',
+    preview: 'نظراً لخبرتكم الواسعة، نودّ عرض فرصة استثنائية...',
+    time: 'السبت', unread: false,
+    body: 'السيد نبيه، استناداً إلى سيرتكم الذاتية المميزة وخبرتكم في القطاع المالي، تودّ شركة الأفق للتوظيف عرض فرصة عمل استثنائية في موقع تنفيذي رفيع. الراتب يتراوح بين 8000 و10000 دينار شهرياً. للتواصل، يُرجى الرد على هذا البريد في أقرب فرصة.'
+  },
+  {
+    avatar: 'ت', color: '#ff6b35', sender: 'تطبيق الأسهم', subject: 'تنبيه: تحركات في محفظتك',
+    preview: 'ارتفعت أسهم الشركة الوطنية للإسمنت بنسبة 4.3%...',
+    time: 'الجمعة', unread: false,
+    body: 'تنبيه استثماري: ارتفعت أسهم الشركة الوطنية للإسمنت بنسبة 4.3% خلال جلسة اليوم. كذلك سجّل مؤشر تونس للأوراق المالية ارتفاعاً بنسبة 1.8%. يُنصح بمراجعة محفظتكم الاستثمارية واتخاذ القرارات المناسبة.'
+  }
+];
 
-    function updateDots() {
-        dots.forEach((dot, index) => {
-            if (index < currentInput.length) {
-                dot.classList.add('filled');
-            } else {
-                dot.classList.remove('filled');
-            }
-        });
-    }
+const investments = [
+  { co: 'شركة سيليكا تك', cat: 'تكنولوجيا المعلومات', amt: 6200 },
+  { co: 'مجموعة الأطلس العقارية', cat: 'العقارات', amt: 7000 },
+  { co: 'البنك الدولي للتجارة', cat: 'الخدمات المالية', amt: 5500 },
+  { co: 'نوفا للطاقة الخضراء', cat: 'الطاقة المتجددة', amt: 6800 },
+  { co: 'ميدي فارما', cat: 'الأدوية والصحة', amt: 5200 },
+  { co: 'كارتاج لوجستيك', cat: 'النقل والخدمات', amt: 7000 },
+  { co: 'أوريكس للاتصالات', cat: 'الاتصالات', amt: 6500 },
+  { co: 'برايم ريتيل', cat: 'تجارة التجزئة', amt: 5800 },
+  { co: 'أغري ساوث', cat: 'الزراعة والغذاء', amt: 6100 },
+  { co: 'ديجيتال برو', cat: 'التحول الرقمي', amt: 7000 },
+  { co: 'هيلث تراك', cat: 'الرعاية الصحية', amt: 5500 },
+  { co: 'تونس فينتك', cat: 'التقنية المالية', amt: 6700 },
+  { co: 'بلو ووتر شيبينج', cat: 'الشحن البحري', amt: 6200 },
+  { co: 'أوميغا للبناء', cat: 'البناء والتشييد', amt: 5900 },
+  { co: 'تأمين ضد الاعتداءات', cat: 'تأمين خاص', amt: 80000 }
+];
 
-    function pressNum(num) {
-        if (currentInput.length >= 6) return;
-        
-        currentInput += num;
-        updateDots();
+const appsData = {
+  'facebook': { name: 'Facebook', icon: '🟦', bg: '#1877f2', cat: 'شبكات اجتماعية' },
+  'instagram': { name: 'Instagram', icon: '📷', bg: 'linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)', cat: 'صور ومقاطع فيديو' },
+  'twitter': { name: 'X (Twitter)', icon: '✖️', bg: '#000', cat: 'شبكات اجتماعية' },
+  'tiktok': { name: 'TikTok', icon: '🎵', bg: '#010101', cat: 'ترفيه وفيديو' },
+  'google': { name: 'Google', icon: '🔍', bg: '#fff', cat: 'بحث وأدوات' },
+  'youtube': { name: 'YouTube', icon: '▶️', bg: '#ff0000', cat: 'فيديو وترفيه' },
+  'truecaller': { name: 'Truecaller', icon: '📞', bg: '#0057b7', cat: 'تعرف على المتصلين', special: true }
+};
 
-        if (currentInput.length === 6) {
-            setTimeout(checkPasscode, 200);
-        }
-    }
+let invPwEntered = '';
+const INV_PASSWORD = '0001';
 
-    function deleteNum() {
-        if (currentInput.length > 0) {
-            currentInput = currentInput.slice(0, -1);
-            updateDots();
-        }
-    }
+function invPwKey(k) {
+  if (invPwEntered.length >= 4) return;
+  invPwEntered += k;
+  const idx = invPwEntered.length - 1;
+  const dot = document.getElementById('ipd' + idx);
+  if (dot) { dot.style.background = '#4caf8a'; dot.style.borderColor = '#4caf8a'; }
+  document.getElementById('invPwError').textContent = '';
+  if (invPwEntered.length === 4) {
+    setTimeout(() => {
+      if (invPwEntered === INV_PASSWORD) {
+        document.getElementById('investorLock').style.display = 'none';
+        document.getElementById('investorApp').style.display = 'flex';
+        renderInvestments();
+      } else {
+        document.getElementById('invPwError').textContent = 'كلمة مرور خاطئة';
+        [0,1,2,3].forEach(i => { const d = document.getElementById('ipd'+i); if(d){d.style.background='transparent';d.style.borderColor='#ff6b6b';} });
+        invPwEntered = '';
+        setTimeout(() => { [0,1,2,3].forEach(i => { const d = document.getElementById('ipd'+i); if(d){d.style.borderColor='#8ba4d0';} }); }, 600);
+      }
+    }, 200);
+  }
+}
 
-    function checkPasscode() {
-        if (currentInput === CORRECT_PIN) {
-            // Success animation & screen switch
-            lockScreen.classList.add('hidden');
-            mailScreen.classList.remove('hidden');
-        } else {
-            // Fail animation
-            dotsBox.classList.add('shake');
-            dots.forEach(dot => dot.classList.add('error'));
-            promptText.style.color = '#ff453a';
-            promptText.innerText = 'الرمز السري خاطئ';
-            
-            setTimeout(() => {
-                currentInput = "";
-                updateDots();
-                dotsBox.classList.remove('shake');
-                dots.forEach(dot => dot.classList.remove('error'));
-                promptText.style.color = '#fff';
-                promptText.innerText = 'أدخل رمز الدخول';
-            }, 600);
-        }
-    }
+function invPwKeyDel() {
+  if (invPwEntered.length === 0) return;
+  const idx = invPwEntered.length - 1;
+  const dot = document.getElementById('ipd' + idx);
+  if (dot) { dot.style.background = 'transparent'; dot.style.borderColor = '#8ba4d0'; }
+  invPwEntered = invPwEntered.slice(0, -1);
+}
+
+function invPwKeyCancel() {
+  invPwEntered = '';
+  document.getElementById('investorLock').style.display = 'none';
+  document.getElementById('homeScreen').style.display = 'flex';
+}
+
+function checkPwResetPhone() {
+  const val = document.getElementById('pwResetPhone').value.replace(/\s/g, '');
+  if (val === '80800800') {
+    // Show notification popup
+    const notif = document.createElement('div');
+    notif.style.cssText = 'position:absolute;top:50px;left:16px;right:16px;background:#1c1c1e;border-radius:14px;padding:14px 16px;z-index:999;box-shadow:0 8px 30px rgba(0,0,0,0.5);direction:rtl;animation:slideDown 0.3s ease;';
+    notif.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <div style="width:32px;height:32px;background:#ff9500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📈</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;">بنك الأمان</div>
+        <div style="font-size:12px;color:#8e8e93;margin-right:auto;">الآن</div>
+      </div>
+      <div style="font-size:14px;color:#fff;font-weight:600;">تم التحقق بنجاح ✓</div>
+      <div style="font-size:13px;color:#8ba4d0;margin-top:4px;">كلمة مرور المحفظة الاستثمارية: <span style="color:#4caf8a;font-weight:700;font-size:15px;letter-spacing:2px;">0001</span></div>`;
+    document.getElementById('phone').appendChild(notif);
+    setTimeout(() => { notif.style.opacity = '0'; notif.style.transition = 'opacity 0.5s'; setTimeout(() => notif.remove(), 500); }, 5000);
+  } else {
+    const input = document.getElementById('pwResetPhone');
+    input.style.borderColor = '#ff3b30';
+    const btn = input.nextElementSibling;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '❌ رقم الهاتف غير مطابق';
+    btn.style.background = '#ff3b30';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = '#007aff'; input.style.borderColor = '#c8c8ce'; }, 2000);
+  }
+}
+
+function pressKey(k) {
+  if (pinEntered.length >= 4) return;
+  pinEntered += k;
+  const dot = document.getElementById('d' + (pinEntered.length - 1));
+  if (dot) { dot.classList.add('filled'); }
+  if (pinEntered.length === 4) {
+    setTimeout(() => {
+      if (pinEntered === CORRECT_PIN) {
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('homeScreen').style.display = 'flex';
+      } else {
+        [0,1,2,3].forEach(i => document.getElementById('d'+i).classList.remove('filled'));
+        pinEntered = '';
+      }
+    }, 300);
+  }
+}
+
+function delKey() {
+  if (pinEntered.length === 0) return;
+  document.getElementById('d' + (pinEntered.length - 1)).classList.remove('filled');
+  pinEntered = pinEntered.slice(0, -1);
+}
+
+function goHome() {
+  document.querySelectorAll('.app-screen, #investorApp, #appStoreApp, #trueCallerApp, #chatScreen').forEach(s => s.style.display = 'none');
+  document.getElementById('emailDetail').style.display = 'none';
+  document.getElementById('investorLock').style.display = 'none';
+  document.getElementById('homeScreen').style.display = 'flex';
+}
+
+function openApp(id) {
+  goHome();
+  document.getElementById('homeScreen').style.display = 'none';
+  if (id === 'investorApp') {
+    invPwEntered = '';
+    [0,1,2,3].forEach(i => { const d = document.getElementById('ipd'+i); if(d){d.style.background='transparent';} });
+    document.getElementById('invPwError').textContent = '';
+    document.getElementById('investorLock').style.display = 'flex';
+    return;
+  }
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'flex';
+  if (id === 'emailApp') renderEmails();
+  if (id === 'investorApp') renderInvestments();
+}
+
+function openAppStore() {
+  goHome();
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('appStoreApp').style.display = 'flex';
+}
+
+function renderEmails() {
+  const list = document.getElementById('emailList');
+  list.innerHTML = '';
+  emails.forEach((em, i) => {
+    const div = document.createElement('div');
+    div.className = 'email-item';
+    div.innerHTML = `
+      ${em.unread ? '<div class="unread-dot"></div>' : '<div style="width:10px"></div>'}
+      <div class="email-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="email-sender" style="font-weight:${em.unread?700:500}">${em.sender}</span>
+        </div>
+        <div class="email-subject">${em.subject}</div>
+        <div class="email-preview">${em.preview}</div>
+      </div>
+      <div class="email-avatar" style="background:${em.color}">${em.avatar}</div>`;
+    div.onclick = () => openEmailDetail(i);
+    list.appendChild(div);
+  });
+}
+
+function openEmailDetail(i) {
+  currentEmailIndex = i;
+  const em = emails[i];
+  em.unread = false;
+  document.getElementById('detailSubject').textContent = em.subject;
+  document.getElementById('detailMeta').textContent = 'من: ' + em.sender + '   |   ' + em.time;
+  const bodyEl = document.getElementById('detailBody');
+  if (em.isPasswordReset) {
+    bodyEl.innerHTML = `
+      <div style="white-space:pre-line;margin-bottom:20px;">${em.body}</div>
+      <div style="background:#f2f2f7;border-radius:12px;padding:16px;direction:rtl;">
+        <div style="font-size:14px;font-weight:600;color:#000;margin-bottom:10px;">رقم الهاتف المسجّل:</div>
+        <input id="pwResetPhone" type="number" placeholder="أدخل رقمك هنا..." style="width:100%;padding:10px 12px;border:1.5px solid #c8c8ce;border-radius:8px;font-size:15px;direction:ltr;outline:none;margin-bottom:12px;" />
+        <div onclick="checkPwResetPhone()" style="background:#007aff;color:#fff;text-align:center;padding:12px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">تحقق واسترجع كلمة المرور</div>
+      </div>`;
+  } else {
+    bodyEl.textContent = em.body;
+  }
+  document.getElementById('emailApp').style.display = 'none';
+  document.getElementById('emailDetail').style.display = 'flex';
+}
+
+function closeEmailDetail() {
+  document.getElementById('emailDetail').style.display = 'none';
+  document.getElementById('emailApp').style.display = 'flex';
+  renderEmails();
+}
+
+function openChat() {
+  document.getElementById('messagesApp').style.display = 'none';
+  document.getElementById('chatScreen').style.display = 'flex';
+}
+
+function closeChat() {
+  document.getElementById('chatScreen').style.display = 'none';
+  document.getElementById('messagesApp').style.display = 'flex';
+}
+
+function renderInvestments() {
+  const list = document.getElementById('invList');
+  list.innerHTML = '';
+  let total = 0;
+  investments.forEach(inv => {
+    total += inv.amt;
+    const div = document.createElement('div');
+    div.className = 'inv-item' + (inv.special ? ' inv-special' : '');
+    div.innerHTML = `
+      <div>
+        <div class="inv-co">${inv.co}</div>
+        <div class="inv-cat">${inv.cat}</div>
+      </div>
+      <div class="inv-amt">${inv.amt.toLocaleString('ar-TN')} د.ت</div>`;
+    list.appendChild(div);
+  });
+  document.getElementById('invTotal').textContent = total.toLocaleString('ar-TN') + ' د.ت';
+}
+
+function searchApps() {
+  const q = document.getElementById('asSearch').value.trim().toLowerCase();
+  const content = document.getElementById('asContent');
+  if (!q) { content.innerHTML = '<div style="color:#8e8e93;font-size:14px;text-align:center;padding:30px 20px;">ابحث عن تطبيقك المفضل</div>'; return; }
+  const matched = Object.entries(appsData).filter(([k]) => k.includes(q) || (k === 'twitter' && q.includes('x')));
+  if (matched.length === 0) {
+    content.innerHTML = '<div class="as-no-result">لا توجد نتائج لـ "' + q + '"</div>'; return;
+  }
+  content.innerHTML = '';
+  matched.forEach(([k, app]) => {
+    const div = document.createElement('div');
+    div.className = 'as-result';
+    div.innerHTML = `
+      <div class="as-app-icon" style="background:${app.bg}">${app.icon}</div>
+      <div>
+        <div class="as-app-name">${app.name}</div>
+        <div class="as-app-cat">${app.cat}</div>
+      </div>
+      <div class="as-get-btn" onclick="installApp('${k}')">تنزيل</div>`;
+    content.appendChild(div);
+  });
+}
+
+function installApp(k) {
+  if (k === 'truecaller') {
+    loadTruecaller();
+  }
+}
+
+function loadTruecaller() {
+  document.getElementById('appStoreApp').style.display = 'none';
+  const ls = document.getElementById('loadingScreen');
+  ls.style.display = 'flex';
+  const fill = document.getElementById('loadFill');
+  let pct = 0;
+  const iv = setInterval(() => {
+    pct += Math.random() * 12 + 3;
+    if (pct >= 100) { pct = 100; clearInterval(iv); setTimeout(openTruecaller, 400); }
+    fill.style.width = Math.min(pct, 100) + '%';
+  }, 300);
+}
+
+function openTruecaller() {
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('trueCallerApp').style.display = 'flex';
+}
+
+function closeTC() {
+  document.getElementById('trueCallerApp').style.display = 'none';
+  openAppStore();
+}
+
+function searchTC() {
+  const q = document.getElementById('tcSearch').value.trim();
+  const content = document.getElementById('tcContent');
+  if (!q) { content.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:14px;text-align:center;padding:30px 20px;">اكتب رقم هاتف للبحث عنه</div>'; return; }
+  const clean = q.replace(/\s/g, '');
+  if (clean === '50900000') {
+    content.innerHTML = `
+      <div class="tc-result">
+        <div style="font-size:40px;margin-bottom:8px;">👤</div>
+        <div class="tc-name">MONDHER FERCHIHI</div>
+        <div class="tc-number">+216 50 900 000</div>
+        <div class="tc-badge">✓ هوية موثقة</div>
+        <div style="margin-top:10px;font-size:12px;color:#888;">بحث 47 مرة هذا الشهر</div>
+      </div>`;
+  } else if (/^\d+$/.test(clean)) {
+    content.innerHTML = `<div class="tc-not-found">⚠️ هذا الرقم غير موجود في قاعدة بياناتنا<br><br><span style="font-size:12px;">تأكد من الرقم وحاول مجدداً</span></div>`;
+  } else {
+    content.innerHTML = `<div class="tc-not-found">أدخل رقم هاتف للبحث عنه</div>`;
+  }
+}
 </script>
-
-</body>
-</html>
